@@ -10,7 +10,7 @@ con.execute("CREATE OR REPLACE TABLE weather_data AS SELECT * FROM final_df")
 con.close()
 
 #modeling with duckdb , creating dimensions city
-con = duckdb.connect("weather_data.duckdb")
+con = duckdb.connect("weather_data.duckdb") #
 con.execute("""
 CREATE OR REPLACE TABLE dim_city AS
     SELECT DISTINCT city
@@ -42,14 +42,44 @@ CREATE INDEX idx_city_id ON fact_weather(city_id)
 """)
 con.close()
 
+
+############querying the database #####################
+import duckdb
 #querying fact table
 con = duckdb.connect("weather_data.duckdb")
-result = con.execute("SELECT * FROM fact_weather LIMIT 10").fetchdf()
+result = con.execute("""
+        SELECT * 
+        FROM fact_weather 
+        LIMIT 10
+""").fetchdf()
+
 print(result)
 con.close()
 
 
+#querying the table dim_city
 
+con = duckdb.connect("weather_data.duckdb")
+result = con.execute("""
+        SELECT * 
+        FROM dim_city 
+        LIMIT 10
+""").fetchdf()
+print(result)
+
+
+#query the table weather_data
+con = duckdb.connect("weather_data.duckdb")
+result = con.execute("""
+        SELECT * 
+        FROM weather_data 
+        LIMIT 10
+""").fetchdf()
+print(result)
+
+
+
+#listando as tabelas criadas
 con = duckdb.connect("weather_data.duckdb")
 tables = con.execute("SHOW TABLES").fetchdf()
 print(tables)
@@ -67,6 +97,6 @@ for tabela in tabelas: # percorre a lista de tabelas
 
 con.close()
 
-#modificando o arquivo parquet dim_city adicionando uma coluna id , a traves do duckdb
+
 
 
